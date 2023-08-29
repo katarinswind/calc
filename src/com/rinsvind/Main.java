@@ -38,15 +38,8 @@ public class Main {
     private static boolean isDigit(char c){
         String str = "";
         str += c;
-        return str != null && (str.matches("[0-9.]+") || str.matches("[IiVvXx.]+"));
+        return str.matches("[0-9.]+") || str.matches("[IiVvXx.]+");
     }
-
-    private static boolean isSign(char c){{
-        if (c == '-' || c == '+'){
-            return true;
-        }
-        return false;
-    }}
 
     private static boolean isRomanianNumber(String str){
         return str != null && str.matches("[-IiVvXx.]+");
@@ -77,7 +70,6 @@ public class Main {
                         }
                     }
                 }
-
                 result += 1;
             } else {
                 if (s == 'v' || s == 'V'){
@@ -115,12 +107,32 @@ public class Main {
                 if (arg == 9)
                     result = "ix";
                 else {
-                    if (arg < 20) {
+                    int o = 0;
+                    if (arg <= 39) {
                         result = "x";
-                        result += Int2RomanianNumber(arg - 10);
-                    } else{
-                        result = "xx";
+                        o = 10;
+                    } else {
+                        if (arg >= 40 && arg < 50) {
+                            result = "xl";
+                            o = 40;
+                        } else {
+                            if (arg >= 50 && arg < 90) {
+                                result = "l";
+                                o = 50;
+                            } else {
+                                if (arg >= 90 && arg < 100) {
+                                    result = "xc";
+                                    o = 90;
+                                } else {
+                                    if (arg == 100)
+                                        return "c";
+
+                                }
+                            }
+                        }
                     }
+
+                    result += Int2RomanianNumber(arg - o);
                 }
             }
         }
@@ -133,23 +145,22 @@ public class Main {
             if (isNumeric(token)){
                 // содержит десятичные цифлы
                 arg = Integer.parseInt(token);
+                arabicDigit = true;
             } else {
                 if (isRomanianNumber(token)) {
-
                     arg = RomanianNumber2int(token);
+                    romanianDigit = true;
                 }
             }
         }
+
+        if (arabicDigit && romanianDigit)
+            throw new IllegalArgumentException("используются римские и десятичные цифры в одном выражении");
+        if (arg > 10){
+            throw new IllegalArgumentException("введено число больше 10");
+        }
         return arg;
     }
-
-//    public static void check(String token) {
-//        if (!isRomanianNumber(token) && romanianDigit){
-//            throw new IllegalArgumentException("используются римские и десятичные цифры в одном выражении");
-//        }
-//
-//        romanianDigit = isRomanianNumber(token);
-//    }
 
     static private boolean romanianDigit = false;
     static private boolean arabicDigit = false;
@@ -168,17 +179,7 @@ public class Main {
             if (s == ' ')
                 continue;
             if (s == '+' || (s == '-' && (isDigit(input.charAt(index + 1))) && index != 0) || s == '*' || s == '/') {
-                if ((!isRomanianNumber(token) && romanianDigit) || (arabicDigit && isRomanianNumber(token))){
-                    throw new IllegalArgumentException("используются римские и десятичные цифры в одном выражении");
-                } else {
-                    arabicDigit = !isRomanianNumber(token);;
-                    romanianDigit = isRomanianNumber(token);
-                }
                 int a = token2Int(token);
-
-                if (a > 10){
-                    throw new IllegalArgumentException("введено число больше 10");
-                }
                 index ++;
                 switch (s) {
                     case '+':
